@@ -1,0 +1,55 @@
+---
+title: "bike-traffic-ttt"
+author: "Laura Schröder"
+date: "06.04.2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Fahrradverkehr in Seattle
+In dieser Auswertung wird der Fahrradverkehr an unterschiedlichen Kreuzungen in Seattle untersucht. 
+
+```{r pakete installieren, message=FALSE, warning=FALSE}
+
+library(tidyverse)
+library(ggplot2)
+library(lubridate)
+```
+
+
+
+```{r load_data, message=FALSE, warning=FALSE}
+bike_traffic <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-04-02/bike_traffic.csv")
+
+names(bike_traffic)
+```
+
+```{r data_cleaning, message=FALSE, warning=FALSE}
+bike_datum <- bike_traffic %>% 
+  mutate(zeitpunkt = dmy_hms(date)) %>% 
+  separate(date, c("datum", "uhrzeit"), sep = " ", extra = "merge")
+
+```
+
+### Auswertung
+Dem Boxplot kann man entnehmen, dass der Elliot Bay Trail durchschnittlich am häufigsten Fahrradfahrer zählt. Auch  der Burke Gilman Trail zählt gering weniger Fahrradfahrer im Durchschnitt, als der Elliot Bay Trail und hat eine große Anzahl an Ausreißern. 
+```{r diagramm_plotten}
+
+bike_datum %>% 
+  group_by(datum, crossing) %>% 
+  summarise(bike_count = sum(bike_count)) %>% 
+  filter(bike_count < 4000) %>% 
+  ggplot() +
+  aes(x = crossing, y = bike_count) +
+  geom_boxplot() +
+  labs(title = "Der Fahrradverkehr an Kreuzungen in Seattle",
+    subtitle = 'Boxplot von Anzahl der Fahrradfahrer nach Kreuzung',
+    x = 'Kreuzung',
+    y = 'Anzahl der Fahrradfahrer') + 
+  coord_flip()
+
+```
