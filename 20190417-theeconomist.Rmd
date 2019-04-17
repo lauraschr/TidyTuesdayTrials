@@ -1,0 +1,78 @@
+---
+title: "20190417-the-economist"
+author: "Laura Schröder"
+date: "17 April 2019"
+output: html_document
+---
+
+## Datensatz zum Brexit aus The Economist
+Hier folgt noch Text.
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+#install.packages("tidyverse")
+#install.packages("esquisse")
+#install.packages("lubridate")
+#install.packages("here")
+#install.packages("janitor")
+library(tidyverse)
+library(esquisse)
+library(lubridate)
+library(here)
+library(janitor)
+
+```
+
+
+```{r daten laden}
+brexit <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-04-16/brexit.csv")
+
+names(brexit)
+```
+
+```{r daten cleanen, message=FALSE, warning=FALSE, paged.print=FALSE}
+### Brexit Raw
+
+brexit_clean <- brexit %>% 
+  set_names(nm = .[3,]) %>% 
+  clean_names() %>% 
+  slice(4:nrow(.))
+
+```
+
+```{r daten plotten}
+
+brexit %>% 
+  mutate(date = dmy(date)) %>% 
+  ggplot() +
+  aes(x = date, y = percent_responding_right) + 
+  geom_point() +
+  geom_smooth() + 
+  labs(title = "Die Zustimmung zum Brexit nimmt ab",
+       subtitle = "Tendenz als Linien- und Punktdiagramm") +
+       xlab ("Zeit") +  
+       ylab ("Positive Stimme (in Prozent)")
+```
+
+### Auswertung Diagramm 1
+
+```{r}
+
+brexit %>% 
+  mutate(date = dmy(date)) %>% 
+  ggplot() +
+  aes(x = date, y = percent_responding_wrong) + 
+  geom_point() +
+  geom_smooth() + 
+  labs(title = "Die Zustimmung zum Brexit nimmt ab",
+       subtitle = "Tendenz als Linien- und Punktdiagramm") +
+       xlab ("Zeit") +  
+       ylab ("Negative Stimme (in Prozent)")
+```
+
+### Auswertung Diagramm 2
