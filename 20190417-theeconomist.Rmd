@@ -1,12 +1,12 @@
 ---
 title: "20190417-the-economist"
 author: "Laura Schröder"
-date: "17 April 2019"
+date: "23 April 2019"
 output: html_document
 ---
 
 ## Datensatz zum Brexit aus The Economist
-Hier folgt noch Text.
+Zwischen Juli 2016 und Juli 2018 fanden mehrere Abstimmungen zum Brexit statt. Die Visualisierungen zeigen die positiven und negativen Stimme zum Brexit in diesem Zeitraum. 
 
 
 ```{r setup, include=FALSE}
@@ -29,13 +29,13 @@ library(janitor)
 ```
 
 
-```{r daten laden}
+```{r daten laden, message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
 brexit <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-04-16/brexit.csv")
 
 names(brexit)
 ```
 
-```{r daten cleanen, message=FALSE, warning=FALSE, paged.print=FALSE}
+```{r daten cleanen, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 ### Brexit Raw
 
 brexit_clean <- brexit %>% 
@@ -45,6 +45,8 @@ brexit_clean <- brexit %>%
 
 ```
 
+### Diagramm 1
+
 ```{r daten plotten}
 
 brexit %>% 
@@ -52,14 +54,18 @@ brexit %>%
   ggplot() +
   aes(x = date, y = percent_responding_right) + 
   geom_point() +
-  geom_smooth() + 
+  geom_smooth( se = FALSE) + 
   labs(title = "Die Zustimmung zum Brexit nimmt ab",
        subtitle = "Tendenz als Linien- und Punktdiagramm") +
        xlab ("Zeit") +  
-       ylab ("Positive Stimme (in Prozent)")
+       ylab ("Positive Stimme (in Prozent)") + 
+  theme_minimal()
 ```
 
 ### Auswertung Diagramm 1
+Es gibt zu beobachten, dass die allgemeine Zustimmung zum Brexit über die Zeit abnahm. Diejenigen, die mit "ja" gestimmt haben, wurden gering weniger. 
+
+### Diagramm 2
 
 ```{r}
 
@@ -68,11 +74,35 @@ brexit %>%
   ggplot() +
   aes(x = date, y = percent_responding_wrong) + 
   geom_point() +
-  geom_smooth() + 
+  geom_smooth(se = FALSE) + 
   labs(title = "Die Zustimmung zum Brexit nimmt ab",
        subtitle = "Tendenz als Linien- und Punktdiagramm") +
        xlab ("Zeit") +  
-       ylab ("Negative Stimme (in Prozent)")
+       ylab ("Negative Stimme (in Prozent)") +
+  theme_minimal()
 ```
 
 ### Auswertung Diagramm 2
+Das Diagramm zeigt, dass die negativen Stimmen zum Brexit über die verschiedenen Wahlperioden zunahm. 
+
+### Zusammenfassung
+Der Trend ist im Diagramm abzulesen. Die Zustimmung zum Brexit verringert sich, wenn auch nur gering.
+
+```{r}
+brexit %>% 
+  mutate(date = dmy(date),
+         #percent_undecided = (100 - percent_responding_right - percent_responding_wrong/100),
+         percent_responding_right = percent_responding_right/100,
+         percent_responding_wrong = percent_responding_wrong/100) %>% 
+  gather(key, value, -date) %>% 
+  ggplot() +
+  aes(x = date, y = value, color = key) +
+  geom_point(size = 2, alpha = 0.5) +
+  geom_smooth(se = FALSE) +
+  labs(title = "Die Zustimmung zum Brexit nimmt ab",
+       subtitle = "Punktdiagramm zur Brexit-Abstimmung") +
+  xlab ("Zeit") +
+  ylab ("Zustimmung in Prozent") +
+  theme_minimal()
+```
+
