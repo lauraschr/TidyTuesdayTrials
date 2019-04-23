@@ -1,0 +1,40 @@
+---
+title: "Corbyn_20190423"
+author: "Laura Schröder"
+date: "23 April 2019"
+output: html_document
+---
+
+## Datensatz aus The Economist
+Analysiert wird hier der "Corbyn" Datensatz aus The Economist.
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+
+```
+
+```{r daten einlesen, include=FALSE}
+
+corbyn <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-04-16/corbyn.csv")
+
+names(corbyn)
+```
+### Diagramm zu "Corbyn"
+Das Balkendiagramm zeigt, dass Jeremy Corbyn durchschnittlich die meisten Likes im Jahr 2016 auf Facebook bekommen hat. Es zeigt die Unterschiede zu den Posts von Jeremy Corbyn und anderen politischen Parteien/Gruppen.
+
+```{r diagramm plotten}
+
+
+ggplot(data = corbyn) +
+  aes(x = political_group, weight = avg_facebook_likes) +
+  geom_bar(fill = "#2171b5") +
+  labs(title = "Jeremy Corbyn bekam durchschnittlich die meisten Likes auf Facebook",
+    x = "Politische Gruppe/Person",
+    y = "durchschittliche Facebook-Likes",
+    caption = "Source: Facebook",
+    subtitle = "Balkendiagramm der Likes auf Facebook") +
+  theme_minimal() +
+  coord_flip()
+
+```
+
