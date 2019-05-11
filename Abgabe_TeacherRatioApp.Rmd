@@ -1,0 +1,14 @@
+---
+title: "Abgabe_TeacherRatio"
+author: "Laura Schröder"
+date: "11 Mai 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Link zur Abgabe
+
+[http://lauraschr.shinyapps.io/teacherratio](http://lauraschr.shinyapps.io/teacherratio)

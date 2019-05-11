@@ -82,6 +82,7 @@ server <- function(input, output) {
     student_ratio %>% 
       filter(indicator %in% input$indicator_sel) %>% 
       ggplot() + aes (x = indicator, y = student_ratio) + geom_boxplot() +
+      
       coord_flip()
   })
 }
