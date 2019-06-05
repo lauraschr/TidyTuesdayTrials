@@ -1,0 +1,81 @@
+---
+title: "Plastic_Waste"
+author: "Laura Schröder"
+date: "22 Mai 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(janitor)
+```
+
+```{r daten laden, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+coast_vs_waste <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-21/coastal-population-vs-mismanaged-plastic.csv")
+
+mismanaged_vs_gdp <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-21/per-capita-mismanaged-plastic-waste-vs-gdp-per-capita.csv")
+
+waste_vs_gdp <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-21/per-capita-plastic-waste-vs-gdp-per-capita.csv")
+
+## Data cleaning ----
+
+coast_vs_waste <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-21/coastal-population-vs-mismanaged-plastic.csv")
+
+mismanaged_vs_gdp <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-21/per-capita-mismanaged-plastic-waste-vs-gdp-per-capita.csv")
+
+waste_vs_gdp <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-21/per-capita-plastic-waste-vs-gdp-per-capita.csv")
+
+continent <- readr::read_csv("https://datahub.io/JohnSnowLabs/country-and-continent-codes-list/r/country-and-continent-codes-list-csv.csv")
+
+# Clean up names and mutate variables
+
+coast_vs_waste <- clean_names(coast_vs_waste) %>%
+
+  mutate(coastal_pop_pct = coastal_population/total_population_gapminder) 
+
+mismanaged_vs_gdp <- mismanaged_vs_gdp %>%
+
+  set_names(c("entity", "code", "year", "mismg_kg_pp_pd", "gdp_per_capita", "total_population_gapminder"))
+
+waste_vs_gdp <- waste_vs_gdp %>%
+
+  set_names(c("entity", "code", "year", "waste_kg_pp_pd", "gdp_per_capita", "total_population_gapminder"))
+
+continent <- clean_names(continent)
+
+continent$continent_code <- ifelse(is.na(continent$continent_code), "NA", continent$continent_code)
+
+# Merging data in a single dataframe
+
+waste_df <- merge(coast_vs_waste, mismanaged_vs_gdp, by = c("code", "year"))
+
+waste_df <- merge(waste_df, waste_vs_gdp, by = c("code", "year"))
+
+waste_df <- merge(waste_df, continent, by.x = "code", by.y = "three_letter_country_code")
+
+waste_df <- select(waste_df, -c(country_name, two_letter_country_code, country_number))
+
+
+```
+
+
+```{r visualisierung}
+
+mismanaged_vs_gdp %>% 
+  filter(year == 2010) %>% 
+  ggplot() +
+  aes(x = gdp_per_capita, y = total_population_gapminder) +
+  labs(title = "Plastikverschmutzung im Vergleich zur Einwohneranzahl",
+       subtitle = "Punktdiagramm zur Plastikverschmutzung",
+        x = "GDP per Capita",
+       y = "total population gapminder") +
+  geom_point() 
+ 
+  
+
+```
+
+## Auswertung
+Man kann erkennen, dass kleinere Bevölkerungen auch weniger Plastikmüll verbrauchen. Es gibt einige Ausreißer, wo die Bevölkerung vergleichweise groß, der Müll aber sehr gering ist. 
